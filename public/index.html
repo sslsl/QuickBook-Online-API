@@ -41,18 +41,10 @@
             <option value="production">Production</option>
             </select>
         </div>
-<<<<<<< HEAD:sample/public/index.html
         <!-- <div class="form-group">
             <label for="redirectUri">Redirect URI</label>
             <input type="text" class="form-control" placeholder="enter the redirectUri"  id="redirectUri" /><br>
         </div> -->
-=======
- <!-- <div class="form-group">
-            <label for="redirectUri">Redirect URI</label>
-            <input type="text" class="form-control" placeholder="enter the redirectUri"  id="redirectUri" /><br>
-        </div> --> 
-       
->>>>>>> refs/remotes/origin/master:server/public/index.html
     </form>
     <p>Now click the <b>Connect to QuickBooks</b> button below.</p>
     <pre id="accessToken"></pre>
@@ -102,14 +94,9 @@
             jsonBody.clientId = $('#clientId').val();
             jsonBody.clientSecret = $('#clientSecret').val();
             jsonBody.environment = $('#environment').val();
-<<<<<<< HEAD:sample/public/index.html
             // jsonBody.redirectUri = $('#redirectUri').val();
             jsonBody.redirectUri = "http://dev.calvoterguide.com:3300/callback";;
 
-=======
-        //    jsonBody.redirectUri = $('#redirectUri').val();
-	    jsonBody.redirectUri = "http://dev.calvoterguide.com:3300/callback";
->>>>>>> refs/remotes/origin/master:server/public/index.html
             $.get('/authUri', {json:jsonBody}, function (uri) {
                 console.log('The Auth Uris is :'+uri);
             })
