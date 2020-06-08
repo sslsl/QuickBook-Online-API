@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="apple-touch-icon icon shortcut" type="image/png" href="https://plugin.intuitcdn.net/sbg-web-shell-ui/6.3.0/shell/harmony/images/QBOlogo.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="./css/common.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>
+        <a href="http://developer.intuit.com">
+            <img src="./images/quickbooks_logo_horz.png" id="headerLogo">
+        </a>
+    </h1>
+    <hr>
+    <div class="well text-center">
+        <h1>This is a sample application of express to QB</h1>
+        <br>
+    </div>
+    <h2>OAuth2.0</h2><h4>( Please enter the client credentials below )</h4><br>
+    <form>
+        <div class="form-group">
+            <label for="clientId">ClientID</label>
+            <input type="text" class="form-control" placeholder="enter the clientId"  id="clientId" />
+        </div>
+        <div class="form-group">
+            <label for="clientSecret">ClientSecret</label>
+            <input type="text"  class="form-control" placeholder="enter the clientSecret"  id="clientSecret" />
+        </div>
+        <div class="form-group">
+            <label for="environment">Environment</label>
+            <select id="environment" class="form-control">
+            <option value="sandbox" selected="selected">Sandbox</option>
+            <option value="production">Production</option>
+            </select>
+        </div>
+<<<<<<< HEAD:sample/public/index.html
+        <!-- <div class="form-group">
+            <label for="redirectUri">Redirect URI</label>
+            <input type="text" class="form-control" placeholder="enter the redirectUri"  id="redirectUri" /><br>
+        </div> -->
+=======
+ <!-- <div class="form-group">
+            <label for="redirectUri">Redirect URI</label>
+            <input type="text" class="form-control" placeholder="enter the redirectUri"  id="redirectUri" /><br>
+        </div> --> 
+       
+>>>>>>> refs/remotes/origin/master:server/public/index.html
+    </form>
+    <p>Now click the <b>Connect to QuickBooks</b> button below.</p>
+    <pre id="accessToken"></pre>
+    <a class="imgLink" href="#" id="authorizeUri" ><img src="./images/C2QB_green_btn_lg_default.png" width="178" /></a>
+    <button  type="button" id="retrieveToken" class="btn btn-success">Display Access Token</button>
+    <button  type="button" id="refreshToken" class="btn btn-success">Refresh Token</button>
+    <button  type="button" id="connectMysql" class ="btn btn-success">Connect Mysql</button>
+    <hr />
+
+    <h2>Make an API call</h2>
+    <p>If there is no access token or the access token is invalid, click either the <b>Connect to QucikBooks</b> or <b>Sign with Intuit</b> button above.</p>
+    <pre id="apiCall"></pre>
+    <button  type="button" id="makeAPICall" class="btn btn-success">Get Company Info</button>
+    <!-- <button  type="button" id="accessCompanyData" class="btn btn-success">Access Company Data</button> -->
+
+    <h2>Access Company QuickBooks</h2>
+    <p>Click the button to access databases. </p>
+    <pre id="Campanydatabases"></pre>
+    <button  type="button" id="accessCompanyData" class="btn btn-success">Access Company Data</button>
+    <!-- <pre id="Campanydatabases"></pre> -->
+    <button  type="button" id="fetchInvoice" class="btn btn-success">Get Company Invoice</button>
+   
+
+    <hr />
+
+    <p>More info:</p>
+    <ul>
+        <li><a href="https://developer.intuit.com/docs">Intuit API Developer Guide</a></li>
+        <li><a href="https://developer.intuit.com/docs/00_quickbooks_online/2_build/50_sample_apps_and_code">Intuit Sample Apps and Code</a></li>
+        <li><a href="https://developer.intuit.com/docs/00_quickbooks_online/2_build/40_sdks">Intuit Official SDK's</a></li>
+    </ul>
+    <hr>
+    <p class="text-center text-muted">
+        &copy; 2018 Intuit&trade;, Inc. All rights reserved. Intuit and QuickBooks are registered trademarks of Intuit Inc.
+    </p>
+
+</div>
+
+
+<script type="text/javascript">
+    (function() {
+
+        function authorizeUri() {
+
+            // Generate the authUri
+            var jsonBody = {};
+            jsonBody.clientId = $('#clientId').val();
+            jsonBody.clientSecret = $('#clientSecret').val();
+            jsonBody.environment = $('#environment').val();
+<<<<<<< HEAD:sample/public/index.html
+            // jsonBody.redirectUri = $('#redirectUri').val();
+            jsonBody.redirectUri = "http://dev.calvoterguide.com:3300/callback";;
+
+=======
+        //    jsonBody.redirectUri = $('#redirectUri').val();
+	    jsonBody.redirectUri = "http://dev.calvoterguide.com:3300/callback";
+>>>>>>> refs/remotes/origin/master:server/public/index.html
+            $.get('/authUri', {json:jsonBody}, function (uri) {
+                console.log('The Auth Uris is :'+uri);
+            })
+            .then(function (authUri) {
+                // Launch Popup using the JS window Object
+                var parameters = "location=1,width=800,height=650";
+                parameters += ",left=" + (screen.width - 800) / 2 + ",top=" + (screen.height - 650) / 2;
+                var win = window.open(authUri, 'connectPopup', parameters);
+                var pollOAuth = window.setInterval(function () {
+                    try {
+                        if (win.document.URL.indexOf("code") != -1) {
+                            window.clearInterval(pollOAuth);
+                            win.close();
+                            location.reload();
+                        }
+                    } catch (e) {
+                        console.log(e)
+                    }
+                }, 100);
+            });
+        }
+
+        function retrieveToken() {
+
+            // Generate the authUri
+            $.get('/retrieveToken', function (token) {
+                var token = (token!=null) ? token : 'Please Authorize Using Connect to Quickbooks first !';
+                $("#accessToken").html(token);
+            });
+        }
+
+        function fetchInvoice() {
+            window.location.href="http://localhost:3300/createInvoice";
+        }
+
+        function refreshToken() {
+
+            $.get('/refreshAccessToken', function (token) {
+                var token = (token!=null) ? token : 'Please Authorize Using Connect to Quickbooks first !';
+                $("#accessToken").html(token);
+            });
+        }
+       
+        function connnectMysql(){
+            //get connection with mysql
+            window.location.href="http://localhost:3300/connectMysql";
+        }
+        function accessCompanyData(){
+            $.get('/accessCompanyDB', function (response) {
+                window.location.href="https://c73.qbo.intuit.com/app/chartofaccounts";
+                $("#Campanydatabases").html(JSON.stringify(response, null, 4));
+                //response.send();
+            });
+        }
+
+        function makeAPICall() {
+
+            // Generate the authUri
+            $.get('/getCompanyInfo', function (response) {
+                $("#apiCall").html(JSON.stringify(response, null, 4));
+            });
+        }
+        function createInvoice(){
+            $.get('/createInvoice',function(response){
+                $("#Campanydatabases").html(JSON.stringify(response,null,4));
+            })
+        }
+
+        document.getElementById('authorizeUri').addEventListener('click', function response(e) {
+            e.preventDefault();
+            authorizeUri();
+        });
+
+        document.getElementById('retrieveToken').addEventListener('click', function response(e) {
+            e.preventDefault();
+            retrieveToken();
+        });
+
+        document.getElementById('connectMysql').addEventListener('click', function response(e) {
+            e.preventDefault();
+            connnectMysql();
+        });
+
+        document.getElementById('refreshToken').addEventListener('click', function response(e) {
+            e.preventDefault();
+            refreshToken();
+        });
+
+        document.getElementById('makeAPICall').addEventListener('click', function response(e) {
+            e.preventDefault();
+            makeAPICall();
+        });
+        document.getElementById('createInvoice').addEventListener('click', function response(e) {
+            e.preventDefault();
+            createInvoice();
+        });
+
+        document.getElementById('accessCompanyData').addEventListener('click', function response(e) {
+            e.preventDefault();
+            accessCompanyData();
+        });
+        document.getElementById('fetchInvoice').addEventListener('click', function response(e) {
+            e.preventDefault();
+            fetchInvoice();
+        });
+        document.getElementById('fetchInvoice').addEventListener('click', function response(e) {
+            e.preventDefault();
+            fetchInvoice();
+        });
+
+    })();
+</script>
+</body>
+</html>
