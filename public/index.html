@@ -95,7 +95,7 @@
             jsonBody.clientSecret = $('#clientSecret').val();
             jsonBody.environment = $('#environment').val();
             // jsonBody.redirectUri = $('#redirectUri').val();
-            jsonBody.redirectUri = "http://dev.calvoterguide.com:3300/callback";;
+            jsonBody.redirectUri = "https://c73.qbo.intuit.com/app/homepage";
 
             $.get('/authUri', {json:jsonBody}, function (uri) {
                 console.log('The Auth Uris is :'+uri);
