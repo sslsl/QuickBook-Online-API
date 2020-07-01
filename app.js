@@ -163,36 +163,80 @@ app.get('/candidates', function (req, res) {
 /**
 * Click record payment 
 */
-app.post('/recordPayment',function(req,res){
-  //var sql = "insert into payment (cand_id,slateName,amount) values ('"+cand_id+"','"+slateName+"','"+amount+"')";
-  var slateName = req.body.slateName;
+app.post('/recordPayment/:cand_id',function(req,res){
+  var json  = req.params;
+  var cand_id = json["cand_id"];
   var amount = req.body.amount;
-  var cand_id = req.body.cand_id;
-  var sqls = ["insert into payment (cand_id,slateName,amount) values ('"+cand_id+"','"+slateName+"','"+amount+"')","insert into transaction (candId,oncePayment,transactionType) values ('"+cand_id+"','"+amount+"','record payment')","update cand set status='payment recorded' where cand_id = '"+cand_id+"'"];
-  pool.getConnection(function(err,connection){
+  var invoiceId = req.body.item;
+ //for(var i=0;i<req.body.length;i++){
+      pool.getConnection(function(err,connection){
+       // amount = req.body[i].amount;
+       // invoiceId = req.body[i].item;
+        var sqls = ["select first_name from cand where cand_id = "+ cand_id ,"select TotalAmt from invoice where Id = '" +invoiceId+"'","insert into payment (cand_id,amount,invoiceId) values ('"+cand_id+"','"+amount+"','"+invoiceId+"')","insert into transaction (candId,oncePayment,transactionType,invoiceId) values ('"+cand_id+"','"+amount+"','record payment','"+invoiceId+"')","update cand set status='payment recorded' where cand_id = '"+cand_id+"'"];
+//       console.log(i);
         connection.query(sqls[0],function(err0,result0){
         if(err0){
                 console.log(err0);
-        }else{
+        }else if(result0.length!=0){
                 connection.query(sqls[1],function(err1,result1){
                         if(err1){
                                 console.log(err1)
-                        }else{
+                         }else if(result1.length!=0){
                                 connection.query(sqls[2],function(err2,result2){
                                         if(err2){
                                                 console.log(err2)
                                         }else{
-                                                res.send({status:"success", message:"Payment inserted and transaction updated successful!"});
+                                                connection.query(sqls[3],function(err3,result3){
+                                                        if(err3){
+                                                                console.log(err3)
+                                                        }else{
+                                                                 getResult(invoiceId,amount,cand_id,res)
+                                                        }
+                                                })
+                                                console.log(result2)
                                         }
                                 })
+                        }else{
+                                res.status(404).send("Invoice ID not found!")
                         }
                 });
-            }
+            }else{
+                 res.status(404).send("Candidate does not exist!")
+                }
         });
-   })
-});
+   });
+  });
 
+  function getResult(invoiceId,amount,cand_id,res){
+          var result = {};
+  //      if(invoiceId.length==1){
+                  var sql = "select sum(oncePayment) as balancePaid  from transaction where candId = '" +cand_id+"' and invoiceId = '"+invoiceId+"'";
+                  db.querySQL(sql,function(err0,res0){
+                     if(err0){
+                              console.log(err0);
+                     }else if(res0.length!=0){
+                          console.log(res0.length)
+                          var tmp = res0[0].balancePaid;
+                          var temp = tmp + amount;
+                          result.balancePaid = temp;
+                          result.invoiceId = invoiceId;
+                          JSON.stringify(result)
+                          res.send(result)
+                          db.querySQL("update invoice set balancePaid = '" +temp+"' where Id =" + invoiceId,function(err,rows){
+                            if(err){
+                                  console.log(err)
+                            }else{
+                                  console.log("success update invoice balance paid")
+                            }
+                         })
+                   }else{
+                          res.status(404).send("Invoice ID not found!")
+                  }
+              })
+  }
+  
 
+/**
 /**
  * Display the token 
  */
@@ -448,12 +492,12 @@ if(cand_id){
   db.querySQL(sqls[0],function(err0,res0){
       if(err0){
               console.log(err0);
-      }else{
+      }else if(res0.length!=0){
               console.log(res0)
               db.querySQL(sqls[1],function(err1,res1){
                       if(err1){
                               console.log(err1)
-                      }else{
+                      }else if(res1.length!=0){
                               for (var i in res1){
                                       invoice.push(res1[i])
                               }
@@ -503,10 +547,36 @@ if(cand_id){
                                         //res.send(result)
                                 }
                         });
-                }
+                }else{
+                  var result =  new Object();
+                                  result.cand_id =  res0[0].cand_id;
+                                  result.ixcode =  res0[0].ixcode;
+                                  result.distcode =  res0[0].distcode;
+                                  result.subcode = res0[0].subcode;
+                                  result.racecode = res0[0].racecode
+                                  result.seatcode = res0[0].seatcode
+                                  result.office = res0[0].office
+                                  result.office_id = res0[0].office_id
+                                  result.first_name = res0[0].first_name;
+                                  result.last_name = res0[0].last_name;
+                                  result.address = res0[0].address1;
+                                  result.city = res0[0].city;
+                                  result.state = res0[0].state;
+                                  result.zip = res0[0].zip;
+                                  result.email = res0[0].email;
+                                  result.phone = res0[0].phone;
+                                  result.status = res0[0].status;
+                                  result.invoice = [];
+                                  result.transaction = [];
+                                  JSON.stringify(result);
+                                  res.send(result);
+          }
+
         })
-}
-})
+    }else{
+      res.status(404).send("Candidate does not exist")
+    }
+  })
 }else{
 db.querySQL("select cand_id,first_name,last_name,address1,address2,city,state,zip,email,phone from cand" , function (err,rows){
 if (err) {
