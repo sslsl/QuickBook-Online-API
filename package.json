@@ -21,7 +21,7 @@
     "intuit-oauth": "^3.0.0",
     "mysql": "^2.18.1",
     "ngrok": "^3.2.5",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.1.1",
     "path": "^0.12.7",
     "snyk": "^1.316.1",
     "superagent": "^5.2.2"
