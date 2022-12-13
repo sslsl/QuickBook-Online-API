@@ -16,7 +16,7 @@
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^5.0.1",
     "ejs": "^2.7.4",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.14.2",
     "intuit-oauth": "^3.0.0",
     "mysql": "^2.18.1",
